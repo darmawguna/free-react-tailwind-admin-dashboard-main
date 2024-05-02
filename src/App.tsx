@@ -8,7 +8,7 @@ import SignUp from './pages/Authentication/SignUp';
 import Calendar from './pages/Calendar';
 import Chart from './pages/Chart';
 import ECommerce from './pages/Dashboard/ECommerce';
-import FormElements from './pages/Form/FormElements';
+
 import FormLayout from './pages/Form/FormLayout';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
@@ -21,7 +21,6 @@ import TableThree from './components/Tables/TableThree';
 import DefaultLayout from './layout/DefaultLayout';
 import Breadcrumb from './components/Breadcrumbs/Breadcrumb';
 import FormComponent from './components/Forms/FormUts';
-import FormUts from './pages/FormInput';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -130,15 +129,9 @@ function App() {
             <>
               <PageTitle title="Customer Services" />
               {/* <FormElements /> */}
-              {/* <DefaultLayout>
-                <Breadcrumb pageName="Tables" />
 
-                <div className="flex flex-col gap-10">
-                  <FormComponent/>
-                  
-                </div>
-              </DefaultLayout> */}
-              <FormUts />
+              {/* <FormComponent/> */}
+              <FormComponent />
             </>
           }
         />

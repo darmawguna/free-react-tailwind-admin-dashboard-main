@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import CustomerServiceForm from '../Forms/FormUts';
-
+import FormComponent from '../Forms/FormUts';
 
 interface CustomerIssue {
   id_customer_service: number;
@@ -26,7 +26,6 @@ const TableThree = () => {
 
   const [showForm, setShowForm] = useState(false);
 
-
   useEffect(() => {
     fetch('https://simobile.singapoly.com/api/trpl/customer-service')
       .then((response) => response.json())
@@ -34,11 +33,12 @@ const TableThree = () => {
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
-  const handleAddClick = () => {
-    setShowForm(true); // Menampilkan form ketika tombol "Add" ditekan
-  };
-
-
+  // useEffect(() => {
+  //   fetch(`https://simobile.singapoly.com/api/trpl/customer-service`)
+  //     .then((response) => response.json())
+  //     .then((data) => setApiData(data.datas))
+  //     .catch((error) => console.error('Error fetching data:', error));
+  // }, [id_customer_service]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -53,6 +53,31 @@ const TableThree = () => {
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+  const handleDeleteClick = (id_customer_service: number) => {
+    if (window.confirm('Yakin ingin menghapus data ini?')) {
+      fetch(
+        `https://simobile.singapoly.com/api/trpl/customer-service/${id_customer_service}`,
+        {
+          method: 'DELETE',
+        },
+      )
+        .then((response) => {
+          if (response.ok) {
+            setApiData((prevData) =>
+              prevData.filter(
+                (item) => item.id_customer_service !== id_customer_service,
+              ),
+            );
+          } else {
+            throw new Error('Error deleting data');
+          }
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
+    }
+  };
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="flex justify-between items-center">
@@ -62,7 +87,7 @@ const TableThree = () => {
         <div className="p-2">
           <button
             className="hover:text-primary text-xl"
-            onClick={handleAddClick}
+            onClick={() => setShowForm(true)}
           >
             Add
           </button>
@@ -70,19 +95,14 @@ const TableThree = () => {
       </div>
 
       {/* Tampilkan form jika showForm bernilai true */}
-      {showForm && (
-        <div>
-          <h4>Add Customer Service</h4>
-          <CustomerServiceForm/>
-        </div>
-      )}
+      {showForm && <FormComponent />}
 
       <div className="max-w-full overflow-x-auto">
         <table className="w-full table-auto">
           <thead>
             <tr className="bg-gray-2 text-left dark:bg-meta-4">
               <th className="min-w-[220px] py-4 px-4 font-medium text-black dark:text-white xl:pl-11">
-                Id Customer Service
+                Nim
               </th>
               <th className="min-w-[150px] py-4 px-4 font-medium text-black dark:text-white">
                 Title Issue
@@ -100,7 +120,7 @@ const TableThree = () => {
               <tr key={key}>
                 <td className="border-b border-[#eee] py-5 px-4 pl-9 dark:border-strokedark xl:pl-11">
                   <h5 className="font-medium text-black dark:text-white">
-                    {data.id_customer_service}
+                    {data.nim}
                   </h5>
                 </td>
                 <td>
@@ -111,14 +131,19 @@ const TableThree = () => {
                 </td>
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                   <div className="flex items-center space-x-3.5">
-                    <button className="hover:text-primary">
-                      {/* Icon 1 */}
+                    <button
+                      // onClick={() => handleEditClick(data.id_customer_service)}
+                      className="hover:text-primary"
+                    >
+                      Edit
                     </button>
-                    <button className="hover:text-primary">
-                      {/* Icon 2 */}
-                    </button>
-                    <button className="hover:text-primary">
-                      {/* Icon 3 */}
+                    <button
+                      onClick={() =>
+                        handleDeleteClick(data.id_customer_service)
+                      }
+                      className="hover:text-primary"
+                    >
+                      Delete
                     </button>
                   </div>
                 </td>
