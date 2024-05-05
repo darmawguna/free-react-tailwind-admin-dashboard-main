@@ -14,7 +14,11 @@ interface Option {
   label: string;
 }
 
-const FormComponent: React.FC = () => {
+interface FormComponentProps {
+  onCancel: () => void;
+}
+
+const FormComponent: React.FC<FormComponentProps> = ({ onCancel }) => {
   const [formData, setFormData] = useState<FormData>({
     title_issues: '',
     description_issues: '',
@@ -244,6 +248,13 @@ const FormComponent: React.FC = () => {
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
             Submit
+          </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Cancel
           </button>
         </div>
       </form>

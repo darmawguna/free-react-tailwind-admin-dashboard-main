@@ -14,11 +14,25 @@ interface Option {
   label: string;
 }
 
-interface Props {
-  itemId: string; // Unique identifier for the item being edited
+interface CustomerServiceData {
+  id_customer_service: number;
+  title_issues: string;
+  description_issues: string;
+  rating: number;
+  image_url: string;
+  id_division_target: number;
+  id_priority: number;
 }
 
-const EditFormComponent: React.FC<Props> = ({ itemId }) => {
+interface FormComponentProps {
+  id_customer_service: number;
+  onCancel: () => void;
+}
+
+const EditFormComponent: React.FC<FormComponentProps> = ({
+  id_customer_service,
+  onCancel,
+}) => {
   const [formData, setFormData] = useState<FormData>({
     title_issues: '',
     description_issues: '',
@@ -32,23 +46,6 @@ const EditFormComponent: React.FC<Props> = ({ itemId }) => {
   const [priorityOptions, setPriorityOptions] = useState<Option[]>([]);
 
   useEffect(() => {
-    // Fetch item data to be edited from API
-    fetch(`https://simobile.singapoly.com/api/trpl/customer-service/${itemId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        setFormData({
-          title_issues: data.title_issues,
-          description_issues: data.description_issues,
-          rating: data.rating,
-          image: null, // Assuming you don't want to show existing image for editing
-          id_division_target: data.id_division_target,
-          id_priority: data.id_priority,
-        });
-      })
-      .catch((error) =>
-        console.error('Error fetching item data for editing:', error),
-      );
-
     // Fetch department options from API
     fetch('https://simobile.singapoly.com/api/division-department')
       .then((response) => response.json())
@@ -86,7 +83,29 @@ const EditFormComponent: React.FC<Props> = ({ itemId }) => {
       .catch((error) =>
         console.error('Error fetching priority options:', error),
       );
-  }, [itemId]);
+
+    // Fetch form data from API
+    fetch(
+      `https://simobile.singapoly.com/api/trpl/customer-service/2255011004/${id_customer_service}`,
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (Array.isArray(data.datas) && data.datas.length > 0) {
+          const customerServiceData: CustomerServiceData = data.datas[0];
+          setFormData({
+            title_issues: customerServiceData.title_issues,
+            description_issues: customerServiceData.description_issues,
+            rating: customerServiceData.rating,
+            image: null, // You may handle image later if needed
+            id_division_target: customerServiceData.id_division_target,
+            id_priority: customerServiceData.id_priority,
+          });
+        } else {
+          console.error('Form data not found:', data);
+        }
+      })
+      .catch((error) => console.error('Error fetching form data:', error));
+  }, [id_customer_service]);
 
   const handleInputChange = (
     event: React.ChangeEvent<
@@ -95,11 +114,6 @@ const EditFormComponent: React.FC<Props> = ({ itemId }) => {
   ) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
-  };
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files && event.target.files[0];
-    setFormData({ ...formData, image: file || null });
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -118,15 +132,15 @@ const EditFormComponent: React.FC<Props> = ({ itemId }) => {
       });
 
       const response = await fetch(
-        `https://simobile.singapoly.com/api/trpl/customer-service/${itemId}`,
+        `https://simobile.singapoly.com/api/trpl/customer-service/2255011004/${id_customer_service}`,
         {
-          method: 'PUT',
+          method: 'POST',
           body: formDataToSend,
         },
       );
 
       if (!response.ok) {
-        throw new Error('Failed to update item');
+        throw new Error('Failed to submit form');
       }
 
       // Reset form data after successful submission
@@ -139,10 +153,10 @@ const EditFormComponent: React.FC<Props> = ({ itemId }) => {
         id_priority: 0,
       });
 
-      alert('Item updated successfully!');
+      alert('Form submitted successfully!');
     } catch (error) {
-      console.error('Error updating item:', error);
-      alert('There was an error updating the item. Please try again later.');
+      console.error('Error submitting form:', error);
+      alert('There was an error submitting the form. Please try again later.');
     }
   };
 
@@ -201,20 +215,7 @@ const EditFormComponent: React.FC<Props> = ({ itemId }) => {
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
-        <div className="mb-4">
-          <label
-            htmlFor="image"
-            className="block text-gray-700 text-sm font-bold mb-2"
-          >
-            Image
-          </label>
-          <input
-            type="file"
-            name="image"
-            onChange={handleFileChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-          />
-        </div>
+        {/* Image display can be added here */}
         <div className="mb-4">
           <label
             htmlFor="id_division_target"
@@ -264,7 +265,14 @@ const EditFormComponent: React.FC<Props> = ({ itemId }) => {
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
-            Update
+            Submit
+          </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Cancel
           </button>
         </div>
       </form>

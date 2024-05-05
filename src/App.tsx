@@ -20,7 +20,8 @@ import TableTwo from './components/Tables/TableTwo';
 import TableThree from './components/Tables/TableThree';
 import DefaultLayout from './layout/DefaultLayout';
 import Breadcrumb from './components/Breadcrumbs/Breadcrumb';
-import FormComponent from './components/Forms/FormUts';
+
+import EditFormComponent from './components/Forms/EditFormUts';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -123,18 +124,10 @@ function App() {
             </>
           }
         />
-        <Route
-          path="/customer-services/add/"
-          element={
-            <>
-              <PageTitle title="Customer Services" />
-              {/* <FormElements /> */}
-
-              {/* <FormComponent/> */}
-              <FormComponent />
-            </>
-          }
-        />
+        {/* <Route
+          path="/customer-service/:id_customer_service/edit"
+          element={<EditFormComponent />}
+        /> */}
 
         <Route
           path="/forms/form-layout"

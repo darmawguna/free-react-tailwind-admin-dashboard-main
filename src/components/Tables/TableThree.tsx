@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import FormComponent from '../Forms/FormUts';
+import EditFormComponent from '../Forms/EditFormUts';
 
 interface CustomerIssue {
   id_customer_service: number;
@@ -23,7 +24,7 @@ const TableThree = () => {
   const [apiData, setApiData] = useState<CustomerIssue[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
-  
+  const [editingItemId, setEditingItemId] = useState<number | null>(null); // State untuk menyimpan ID item yang sedang diedit
 
   const [showForm, setShowForm] = useState(false);
 
@@ -33,8 +34,6 @@ const TableThree = () => {
       .then((data) => setApiData(data.datas))
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
-
-
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -52,7 +51,7 @@ const TableThree = () => {
   const handleDeleteClick = (id_customer_service: number) => {
     if (window.confirm('Yakin ingin menghapus data ini?')) {
       fetch(
-        `https://simobile.singapoly.com/api/trpl/customer-service/${id_customer_service}`,
+        `https://simobile.singapoly.com/api/trpl/customer-service/2255011004/${id_customer_service}`,
         {
           method: 'DELETE',
         },
@@ -74,7 +73,20 @@ const TableThree = () => {
     }
   };
 
-  
+  const handleEditClick = (id_customer_service: number) => {
+    // Set state editingItemId dengan ID item yang akan diedit
+    setEditingItemId(id_customer_service);
+  };
+
+  const handleEditCancel = () => {
+    // Reset state editingItemId saat pembatalan edit
+    setEditingItemId(null);
+  };
+  const handleAddCancel = () => {
+    // Reset state editingItemId saat pembatalan edit
+    setShowForm(false);
+  };
+
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="flex justify-between items-center">
@@ -91,8 +103,16 @@ const TableThree = () => {
         </div>
       </div>
 
-      {/* Tampilkan form jika showForm bernilai true */}
-      {showForm && <FormComponent />}
+      {/* Tampilkan form add jika showForm bernilai true */}
+      {showForm && <FormComponent onCancel={handleAddCancel} />}
+
+      {/* Tampilkan form edit jika editingItemId tidak null */}
+      {editingItemId && (
+        <EditFormComponent
+          onCancel={handleEditCancel}
+          id_customer_service={editingItemId}
+        />
+      )}
 
       <div className="max-w-full overflow-x-auto">
         <table className="w-full table-auto">
@@ -129,8 +149,7 @@ const TableThree = () => {
                 <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                   <div className="flex items-center space-x-3.5">
                     <button
-                      // onClick={() => handleEditClick(data.id_customer_service)}
-                      
+                      onClick={() => handleEditClick(data.id_customer_service)} // Panggil handleEditClick dengan ID item
                       className="hover:text-primary"
                     >
                       Edit
