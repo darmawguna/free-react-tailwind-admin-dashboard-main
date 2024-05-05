@@ -22,6 +22,7 @@ import DefaultLayout from './layout/DefaultLayout';
 import Breadcrumb from './components/Breadcrumbs/Breadcrumb';
 
 import EditFormComponent from './components/Forms/EditFormUts';
+import TableFour from './components/Tables/TableFour';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -144,6 +145,22 @@ function App() {
             <>
               <PageTitle title="Tables | TailAdmin - Tailwind CSS Admin Dashboard Template" />
               <Tables />
+            </>
+          }
+        />
+        <Route
+          path="/customer-services/2255011004"
+          element={
+            <>
+              <PageTitle title="Tables | TailAdmin - Table Customer Services Darma Wiguna" />
+              {/* <Tables /> */}
+              <DefaultLayout>
+                <Breadcrumb pageName="Tables Customer Services Darma Wiguna" />
+
+                <div className="flex flex-col gap-10">
+                  <TableFour />
+                </div>
+              </DefaultLayout>
             </>
           }
         />
