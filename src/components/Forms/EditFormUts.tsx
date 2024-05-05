@@ -14,7 +14,11 @@ interface Option {
   label: string;
 }
 
-const FormComponent: React.FC = () => {
+interface Props {
+  itemId: string; // Unique identifier for the item being edited
+}
+
+const EditFormComponent: React.FC<Props> = ({ itemId }) => {
   const [formData, setFormData] = useState<FormData>({
     title_issues: '',
     description_issues: '',
@@ -28,6 +32,23 @@ const FormComponent: React.FC = () => {
   const [priorityOptions, setPriorityOptions] = useState<Option[]>([]);
 
   useEffect(() => {
+    // Fetch item data to be edited from API
+    fetch(`https://simobile.singapoly.com/api/trpl/customer-service/${itemId}`)
+      .then((response) => response.json())
+      .then((data) => {
+        setFormData({
+          title_issues: data.title_issues,
+          description_issues: data.description_issues,
+          rating: data.rating,
+          image: null, // Assuming you don't want to show existing image for editing
+          id_division_target: data.id_division_target,
+          id_priority: data.id_priority,
+        });
+      })
+      .catch((error) =>
+        console.error('Error fetching item data for editing:', error),
+      );
+
     // Fetch department options from API
     fetch('https://simobile.singapoly.com/api/division-department')
       .then((response) => response.json())
@@ -65,7 +86,7 @@ const FormComponent: React.FC = () => {
       .catch((error) =>
         console.error('Error fetching priority options:', error),
       );
-  }, []);
+  }, [itemId]);
 
   const handleInputChange = (
     event: React.ChangeEvent<
@@ -97,15 +118,15 @@ const FormComponent: React.FC = () => {
       });
 
       const response = await fetch(
-        'https://simobile.singapoly.com/api/trpl/customer-service/2255011004',
+        `https://simobile.singapoly.com/api/trpl/customer-service/${itemId}`,
         {
-          method: 'POST',
+          method: 'PUT',
           body: formDataToSend,
         },
       );
 
       if (!response.ok) {
-        throw new Error('Failed to submit form');
+        throw new Error('Failed to update item');
       }
 
       // Reset form data after successful submission
@@ -118,10 +139,10 @@ const FormComponent: React.FC = () => {
         id_priority: 0,
       });
 
-      alert('Form submitted successfully!');
+      alert('Item updated successfully!');
     } catch (error) {
-      console.error('Error submitting form:', error);
-      alert('There was an error submitting the form. Please try again later.');
+      console.error('Error updating item:', error);
+      alert('There was an error updating the item. Please try again later.');
     }
   };
 
@@ -243,7 +264,7 @@ const FormComponent: React.FC = () => {
             type="submit"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
-            Submit
+            Update
           </button>
         </div>
       </form>
@@ -251,4 +272,4 @@ const FormComponent: React.FC = () => {
   );
 };
 
-export default FormComponent;
+export default EditFormComponent;

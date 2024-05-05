@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import CustomerServiceForm from '../Forms/FormUts';
+
 import FormComponent from '../Forms/FormUts';
 
 interface CustomerIssue {
@@ -23,6 +23,7 @@ const TableThree = () => {
   const [apiData, setApiData] = useState<CustomerIssue[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5);
+  
 
   const [showForm, setShowForm] = useState(false);
 
@@ -33,12 +34,7 @@ const TableThree = () => {
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
-  // useEffect(() => {
-  //   fetch(`https://simobile.singapoly.com/api/trpl/customer-service`)
-  //     .then((response) => response.json())
-  //     .then((data) => setApiData(data.datas))
-  //     .catch((error) => console.error('Error fetching data:', error));
-  // }, [id_customer_service]);
+
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -78,6 +74,7 @@ const TableThree = () => {
     }
   };
 
+  
   return (
     <div className="rounded-sm border border-stroke bg-white px-5 pt-6 pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-7.5 xl:pb-1">
       <div className="flex justify-between items-center">
@@ -133,6 +130,7 @@ const TableThree = () => {
                   <div className="flex items-center space-x-3.5">
                     <button
                       // onClick={() => handleEditClick(data.id_customer_service)}
+                      
                       className="hover:text-primary"
                     >
                       Edit
